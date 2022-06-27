@@ -65,7 +65,7 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 userSchema.methods.getToken = function (cb) {
   var user = this;
   //jsonwebtoken 이용하여 token 생성하기
-  var token = jwt.sign(user._id.toHexString(), 'secretToken');
+  var token = jwt.sign(user._id.toHexString(), '1234');
 
   user.token = token;
   user.save(function (err, userInfo) {
@@ -74,15 +74,15 @@ userSchema.methods.getToken = function (cb) {
   });
 };
 
-userSchema.static.findByToken = function (token, cb) {
+userSchema.statics.findByToken = function (token, cb) {
   var user = this;
 
   // 토큰을 decode한다
-  jwt.verify(token, 'secretToken', function (err, decoded) {
+  jwt.verify(token, '1234', function (err, decoded) {
     // 유저 아이디를 이용해서 아이디를 찾는다
     // 클라에서 가져온 토큰과 db에 보관된 토큰이 일치하는가?
 
-    userInfo.findOne({ _id: decoded, token: token }, function (err, userInfo) {
+    user.findOne({ _id: decoded, token: token }, function (err, userInfo) {
       if (err) return cb(err);
       cb(null, userInfo);
     });

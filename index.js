@@ -74,7 +74,27 @@ app.get('/api/users/auth', auth, (req, res) => {
   // 여기까지 middleware를 통과해왔다는 이야기는 인증이 참이라는것
   res.status(200).json({
     _id: req.userInfo._id,
+    isAdmin: req.userInfo.role === 0 ? false : true,
+    isAuth: true,
+    email: req.userInfo.email,
+    name: req.userInfo.name,
+    lastname: req.userInfo.lastname,
+    role: req.userInfo.role,
+    image: req.userInfo.image,
   });
+});
+
+app.get('/api/users/logout', auth, (req, res) => {
+  User.findOneAndUpdate(
+    { _id: req.userInfo._id },
+    { token: '' },
+    (err, userInfo) => {
+      if (err) return res.json({ success: false, err });
+      return res.status(200).send({
+        success: true,
+      });
+    }
+  );
 });
 
 app.listen(port, () => {
